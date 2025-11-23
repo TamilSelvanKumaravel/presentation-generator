@@ -23,11 +23,12 @@ class OllamaService(BaseLLMService):
         topic: str,
         number_of_slides: int,
         style: str = "professional",
-        language: str = "English"
+        language: str = "English",
+        include_images: bool = True
     ) -> LLMResponse:
         """Generate presentation content using Ollama."""
         try:
-            prompt = build_presentation_prompt(topic, number_of_slides, style, language)
+            prompt = build_presentation_prompt(topic, number_of_slides, style, language, include_images)
             system_prompt = build_system_prompt()
             
             full_prompt = f"{system_prompt}\n\n{prompt}"
@@ -141,11 +142,18 @@ class OllamaService(BaseLLMService):
             content = slide_data.get("content", [])
             if not isinstance(content, list):
                 content = [str(content)]
+            
+            # Ensure content is never empty
+            if not content or len(content) == 0:
+                content = [f"Content for slide {idx}"]
+                app_logger.warning(f"Empty content for slide {idx}, using fallback")
                 
             slides.append(SlideContent(
                 slide_number=slide_data.get("slide_number", idx),
                 title=slide_data.get("title", f"Slide {idx}"),
-                content=content
+                content=content,
+                image_query=slide_data.get("image_query"),
+                layout=slide_data.get("layout", "content")
             ))
         
         return LLMResponse(

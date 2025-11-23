@@ -23,11 +23,12 @@ class OpenRouterService(BaseLLMService):
         topic: str,
         number_of_slides: int,
         style: str = "professional",
-        language: str = "English"
+        language: str = "English",
+        include_images: bool = True
     ) -> LLMResponse:
         """Generate presentation content using OpenRouter."""
         try:
-            prompt = build_presentation_prompt(topic, number_of_slides, style, language)
+            prompt = build_presentation_prompt(topic, number_of_slides, style, language, include_images)
             system_prompt = build_system_prompt()
             
             app_logger.info(f"Generating presentation with OpenRouter for topic: {topic}")
@@ -95,10 +96,21 @@ class OpenRouterService(BaseLLMService):
                 else:
                     content = [str(content)]
             
+            # CRITICAL: Ensure content is never empty (Pydantic requires min_items=1)
+            if not content or len(content) == 0:
+                content = [f"Content for {title}"]
+                app_logger.warning(f"Empty content for slide {idx}, using fallback")
+            
+            # Get optional fields
+            image_query = slide_data.get("image_query")
+            layout = slide_data.get("layout", "content")
+            
             slides.append(SlideContent(
                 slide_number=slide_number,
                 title=title,
-                content=content
+                content=content,
+                image_query=image_query,
+                layout=layout
             ))
         
         return LLMResponse(

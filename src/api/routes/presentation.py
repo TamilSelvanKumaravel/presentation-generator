@@ -57,7 +57,8 @@ async def generate_presentation(
             topic=request.topic,
             number_of_slides=request.number_of_slides,
             style=request.style,
-            language=request.language
+            language=request.language,
+            include_images=request.include_images
         )
         
         # Generate presentation file

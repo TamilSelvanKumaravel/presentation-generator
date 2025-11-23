@@ -13,7 +13,8 @@ class BaseLLMService(ABC):
         topic: str,
         number_of_slides: int,
         style: str = "professional",
-        language: str = "English"
+        language: str = "English",
+        include_images: bool = True
     ) -> LLMResponse:
         """Generate presentation content using LLM."""
         pass

@@ -8,6 +8,8 @@ class SlideContent(BaseModel):
     slide_number: int = Field(..., ge=1, description="Slide number")
     title: str = Field(..., min_length=1, description="Slide title")
     content: List[str] = Field(..., min_items=1, description="Slide bullet points")
+    image_query: Optional[str] = Field(None, description="Search query for slide image")
+    layout: Literal["title", "content", "two_column", "image_right"] = Field("content", description="Slide layout type")
 
 
 class PresentationRequest(BaseModel):

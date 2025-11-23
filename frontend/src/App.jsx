@@ -9,7 +9,7 @@ const defaultForm = {
   format: "pptx",
   style: "professional",
   language: "English",
-  includeImages: false,
+  includeImages: true,
 };
 
 const styles = [
